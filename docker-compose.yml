@@ -11,7 +11,7 @@ services:
 
       - DB_USER=onecuser
       - DB_PASS=anotherpass
-      - DB_NAME=powa
+      - DB_NAME=powa,mamonsu
       - DB_TEMPLATE=
 
       - DB_EXTENSION=
@@ -56,4 +56,4 @@ services:
         - 8899:8888
       links:
         - PostgreSQLSlave:slave
-    
+  
