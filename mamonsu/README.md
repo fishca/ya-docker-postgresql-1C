@@ -11,14 +11,31 @@ docker run --rm mamonsu bootstrap --host 192.168.99.100 --dbname mamonsu --usern
 В результате mamonsu создаёт в указанной базе данных несколько таблиц с префиксом mamonsu. Не удаляйте эти таблицы, так как они нужны для работы mamonsu.
 
 
-TODO экспорт шаблона
+
+
+TODO экспорт-импорт шаблона через вызов команды с параметрами или скрипта init-start.sh (сейчас только вручную)
 ```
  "data": "Invalid parameter \"/rules/applications\": unexpected parameter \"updateExisting\"."
 ```
 
+Загрузка шаблона мониторинга
+
+
+
 Создание группы и хоста
 
-docker run -it --entrypoint mamonsu zabbix host create pg-master pg PostgresPro-Linux 192.168.99.100 --url=http://192.168.99.100:8081/ --user=Admin --password=zabbix mamonsu
+docker run -it --entrypoint "mamonsu" mamonsu zabbix hostgroup create pg --url=http://192.168.99.100:8081/ --user=Admin --password=zabbix
 
-TODO
+
+
+docker run -it --entrypoint "mamonsu" mamonsu zabbix host create pg-master 15 10254 192.168.99.100 --url=http://192.168.99.100:8081/ --user=Admin --password=zabbix
+
+где
+    15 - id группы хостов созданной на предыдущем шаге
+    10254 - id загруженного шаблона
+
+
+TODO - получение или задание id принудительно
+
+
 

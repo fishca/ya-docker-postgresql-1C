@@ -12,6 +12,7 @@ COPY init-start.sh /
 
 ENTRYPOINT ["/mamonsu-entrypoint.sh"]
 
+EXPOSE 10050
 
 # CMD ["mamonsu", "-c /etc/mamonsu/agent.conf"]
 # CMD ["mamonsu"]
