@@ -11,7 +11,7 @@ services:
 
       - DB_USER=onecuser
       - DB_PASS=anotherpass
-      - DB_NAME=powa
+      - DB_NAME=powa,mamonsu,zabbix
       - DB_TEMPLATE=
 
       - DB_EXTENSION=
@@ -57,4 +57,13 @@ services:
         - 8899:8888
       links:
         - PostgreSQLSlave:slave
-    
+  
+  mamonsu:
+    container_name: mamonsu
+    build: 
+      context: mamonsu
+    image: silverbulleters/mamonsu:latest
+    ports:
+      - 10050:10050
+    links:
+      - PostgreSQL:master
