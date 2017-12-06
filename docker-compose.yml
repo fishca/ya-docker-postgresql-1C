@@ -57,4 +57,13 @@ services:
         - 8899:8888
       links:
         - PostgreSQLSlave:slave
+
+  pghero-db1:
+    image: ankane/pghero
+    environment:
+      - DATABASE_URL=postgres://postgres:somepass@master-db:5432/vanessa-base
+    links:
+      - PostgreSQL:master-db
+    ports:
+      - 10000:8080
     

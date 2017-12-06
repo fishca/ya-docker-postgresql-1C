@@ -468,6 +468,11 @@ adoptive_io() {
   set_postgresql_param "effective_io_concurrency" "2"
 }
 
+adoptive_sync() {
+  echo "disable syncron commit"
+  set_postgresql_param "synchronous_commit" "off"
+}
+
 adoptive_fstat() {
   echo 'we need to fix fstat here'
 }
@@ -524,6 +529,7 @@ configure_postgresql() {
     adoptive_maintenance_mem
     adoptive_cashe_size
     adoptive_io
+    adoptive_sync
 
     enable_magic
 
