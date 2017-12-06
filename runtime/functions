@@ -67,7 +67,7 @@ set_postgresql_param() {
     local current=$(exec_as_postgres sed -n -e "s/^\(${key} = '\)\([^ ']*\)\(.*\)$/\2/p" ${PG_CONF})
     if [[ "${current}" != "${value}" ]]; then
       if [[ ${verbosity} == verbose ]]; then
-        echo "‣ Setting postgresql.conf parameter: ${key} = '${value}'"
+        echo "Setting postgresql.conf parameter: ${key} = '${value}'"
       fi
       value="$(echo "${value}" | sed 's|[&]|\\&|g')"
       exec_as_postgres sed -i "s|^[#]*[ ]*${key} = .*|${key} = '${value}'|" ${PG_CONF}
@@ -336,6 +336,28 @@ setup_default_extension() {
 
 }
 
+create_tablespaces() {
+  
+  case $REPLICATION_MODE in
+      slave|snapshot|backup)
+        echo "INFO! Tablespaces cannot be created on a $REPLICATION_MODE node. Skipping..."
+        ;;
+      *)
+
+      echo "Create table spaces"
+
+      psql -U ${PG_USER} -c "CREATE TABLESPACE tmptblspc LOCATION '${PG_TEMPTBLSPC}';" >/dev/null 2>&1
+      psql -U ${PG_USER} -c "CREATE TABLESPACE v81c_data LOCATION '${PG_V81C_DATA}';" >/dev/null 2>&1
+      psql -U ${PG_USER} -c "CREATE TABLESPACE v81c_index LOCATION '${PG_V81C_INDEX}';" >/dev/null 2>&1
+
+      echo "SET temp_tablespaces"
+
+      set_postgresql_param "temp_tablespaces" "tmptblspc"
+      ;;
+  esac
+
+}
+
 load_extensions() {
   local database=${1?missing argument}
 
@@ -495,6 +517,7 @@ configure_postgresql() {
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
 
   setup_default_extension
+  create_tablespaces
 
   # stop server for reload conf
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
