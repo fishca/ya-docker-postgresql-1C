@@ -53,6 +53,8 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=somepass
     #  - PGADMIN_ENABLE_TLS=
     #  - PGADMIN_SERVER_NAME=
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin/
     links: 
       - PostgreSQL:master
       - PostgreSQLSlave:slave
@@ -89,3 +91,5 @@ volumes:
    pg-v81cdata-slave:
    pg-v81cindex-slave:
    pg-log-slave:
+
+   pgadmin-data:
