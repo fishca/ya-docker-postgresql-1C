@@ -14,7 +14,11 @@ ENV PG_APP_HOME="/etc/docker-postgresql"\
     PG_CERTDIR=/etc/postgresql/certs
 
 ENV PG_BINDIR=/usr/lib/postgresql/${PG_VERSION}/bin \
-    PG_DATADIR=${PG_HOME}/${PG_VERSION}/main
+    PG_DATADIR=${PG_HOME}/${PG_VERSION}/main \
+    PG_WAL=${PG_HOME}/pg_xlog \
+    PG_TEMPTBLSPC=${PG_HOME}/temptblspc \
+    PG_V81C_DATA=${PG_HOME}/v81c_data \
+    PG_V81C_INDEX=${PG_HOME}/v81c_index 
 
 RUN apt-get update && apt-get install -y locales \
         && localedef -i ru_RU -c -f UTF-8 -A /usr/share/locale/locale.alias ru_RU.UTF-8 \
@@ -66,6 +70,7 @@ COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
 EXPOSE 5432/tcp
-VOLUME ["${PG_HOME}", "${PG_RUNDIR}"]
+VOLUME ["${PG_HOME}", "${PG_RUNDIR}", "${PG_LOGDIR}", "${PG_DATADIR}"]
+VOLUME ["${PG_TEMPTBLSPC}", "${PG_V81C_DATA}", "${PG_V81C_INDEX}"]
 WORKDIR ${PG_HOME}
-ENTRYPOINT ["/sbin/entrypoint.sh"]
+ENTRYPOINT ["/sbin/entrypoint.sh"] 
