@@ -1,5 +1,13 @@
 # Changelog
 
+**9.6.5-5**
+
+* extend docker-compose with pghero, mamonsu agent and docker-volumes
+    * powa now may use master as monitor host
+* create tablespaces in postgresql with 1C support of v8index and v8data tablespaces
+* fix the function what sets the max connection params
+* set the replica commit async (sync=off)
+
 **9.6.5-4**
 
 - add mamonsu tune by default
