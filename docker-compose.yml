@@ -72,7 +72,7 @@ services:
   pghero-db1:
     image: ankane/pghero
     environment:
-      - DATABASE_URL=postgres://postgres:somepass@master-db:5432/vanessa-base
+      - DATABASE_URL=postgres://postgres:somepass@master-db:5432/frag-20
     links:
       - PostgreSQL:master-db
     ports:
