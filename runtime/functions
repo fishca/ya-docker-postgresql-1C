@@ -545,6 +545,7 @@ configure_postgresql() {
         ;;
       *)
 
+    set_max_connection
     adoptive_shared_buffers
     adoptive_temp_buffers
     adoptive_autovacuum_workers
