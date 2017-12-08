@@ -439,6 +439,11 @@ set_max_connection() {
   echo "Set the maxconnection ${PG_MAX_CONNECTION}"
 }
 
+set_timezone() {
+  set_postgresql_param "timezone" "${PG_TIMEZONE}" 
+  echo "Set timezone to ${PG_TIMEZONE}"
+}
+
 adoptive_shared_buffers() {
   shared=$(expr $physmem / 4)
   set_postgresql_param "shared_buffers" "${shared}MB" 
@@ -546,6 +551,7 @@ configure_postgresql() {
       *)
 
     set_max_connection
+    set_timezone
     adoptive_shared_buffers
     adoptive_temp_buffers
     adoptive_autovacuum_workers

@@ -19,6 +19,7 @@ services:
       - REPLICATION_SSLMODE=
       - PG_TUNE_BY_MAMONSU=true
       - PG_MAX_CONNECTION=130
+      - PG_TIMEZONE=Europe/Moscow
     volumes:
       - pg-data-master:/var/lib/postgresql/9.6/main
       - pg-temptbl-master:/var/lib/postgresql/temptblspc
