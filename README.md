@@ -431,3 +431,7 @@ vacuumdb -v -a -f -F -z
 Скрипт использует oscript.io для реализации, для подключения используется системные переменные DBNAME
 
 Подробней в самом скрипте [./tools/compsess-status.os]
+
+## Скрипты PLSQL
+
+* `postgres.public.make_tablespace(name, dir, owner)` - создает табличное простраство с идентификатором `name`, по адресу `dir` с владелцем owner - по умолчанию `postgres`

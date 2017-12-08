@@ -346,9 +346,9 @@ create_tablespaces() {
 
       echo "Create table spaces if not exist"
 
-      psql -U ${PG_USER} -c "select public.make_tablespace('tmptblspc','${PG_TEMPTBLSPC}','');" >/dev/null 2>&1
-      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_data','${PG_V81C_DATA}','');" >/dev/null 2>&1
-      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_index','${PG_V81C_INDEX}','');" >/dev/null 2>&1
+      psql -U ${PG_USER} -c "select public.make_tablespace('tmptblspc','${PG_TEMPTBLSPC}','');" 
+      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_data','${PG_V81C_DATA}','');" 
+      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_index','${PG_V81C_INDEX}','');" 
 
       echo "SET temp_tablespaces"
 
@@ -447,12 +447,12 @@ create_plsql_function() {
         ;;
       *)
 
-      echo "Create functions"
+      echo "Create functions PLSQL"
 
-      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS dblink;" >/dev/null 2>&1
+      psql -U ${PG_USER} -c "CREATE EXTENSION IF NOT EXISTS dblink;" >/dev/null 2>&1
 
       echo "Make tablespace if not exist"
-      psql -U ${PG_USER} -f ${PG_APP_HOME}/plsql/make_tablespaces.pgsql >/dev/null 2>&1
+      psql -U ${PG_USER} -f ${PG_APP_HOME}/plsql/make_tablespaces.pgsql
       
       ;;
   esac
@@ -547,7 +547,9 @@ configure_postgresql() {
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
 
   setup_default_extension
+  create_plsql_function
   create_tablespaces
+  
 
   # stop server for reload conf
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
@@ -572,8 +574,6 @@ configure_postgresql() {
 
     set_max_connection
     set_timezone
-
-    create_plsql_function
 
     adoptive_shared_buffers
     adoptive_temp_buffers
