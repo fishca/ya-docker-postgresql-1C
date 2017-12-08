@@ -8,21 +8,24 @@ services:
     environment:
       - DEBUG=true
       - PG_PASSWORD=somepass
-
       - DB_USER=onecuser
       - DB_PASS=anotherpass
-      - DB_NAME=powa,mamonsu,zabbix
+      - DB_NAME=powa,mamonsu
       - DB_TEMPLATE=
-
       - DB_EXTENSION=
-
       - REPLICATION_MODE=
       - REPLICATION_USER=repluser
       - REPLICATION_PASS=replpass
       - REPLICATION_SSLMODE=
       - PG_TUNE_BY_MAMONSU=true
-
-      - PG_MAX_CONNECTION=30
+      - PG_MAX_CONNECTION=130
+      - PG_TIMEZONE=Europe/Moscow
+    volumes:
+      - pg-data-master:/var/lib/postgresql/9.6/main
+      - pg-temptbl-master:/var/lib/postgresql/temptblspc
+      - pg-v81cdata-master:/var/lib/postgresql/v81c_data
+      - pg-v81cindex-master:/var/lib/postgresql/v81c_index
+      - pg-log-master:/var/log/postgresql
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
@@ -35,6 +38,12 @@ services:
       - REPLICATION_HOST=master
       - REPLICATION_PORT=5432
       - REPLICATION_SSLMODE=prefer
+    volumes:
+      - pg-data-slave:/var/lib/postgresql/9.6/main
+      - pg-temptbl-slave:/var/lib/postgresql/temptblspc
+      - pg-v81cdata-slave:/var/lib/postgresql/v81c_data
+      - pg-v81cindex-slave:/var/lib/postgresql/v81c_index
+      - pg-log-slave:/var/log/postgresql
 
   PgAdminDBA:
     image: dpage/pgadmin4
@@ -45,6 +54,8 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=somepass
     #  - PGADMIN_ENABLE_TLS=
     #  - PGADMIN_SERVER_NAME=
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin/
     links: 
       - PostgreSQL:master
       - PostgreSQLSlave:slave
@@ -58,6 +69,16 @@ services:
       links:
         - PostgreSQL:master
         - PostgreSQLSlave:slave
+
+  pghero-db1:
+    image: ankane/pghero
+    environment:
+      - DATABASE_URL=postgres://postgres:somepass@master-db:5432/frag-20
+    links:
+      - PostgreSQL:master-db
+    ports:
+      - 10000:8080
+    
   
   mamonsu:
     container_name: mamonsu
@@ -68,3 +89,18 @@ services:
       - 10050:10050
     links:
       - PostgreSQL:master
+
+volumes:
+   pg-data-master:
+   pg-temptbl-master:
+   pg-v81cdata-master:
+   pg-v81cindex-master:
+   pg-log-master:
+
+   pg-data-slave:
+   pg-temptbl-slave:
+   pg-v81cdata-slave:
+   pg-v81cindex-slave:
+   pg-log-slave:
+
+   pgadmin-data:
