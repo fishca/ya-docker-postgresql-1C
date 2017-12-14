@@ -23,10 +23,11 @@ services:
       - PG_TIMEZONE=Europe/Moscow
     volumes:
       - pg-data-master:/var/lib/postgresql/9.6/main
-      - pg-temptbl-master:/var/lib/postgresql/temptblspc
+   #   - pg-temptbl-master:/var/lib/postgresql/temptblspc
       - pg-v81cdata-master:/var/lib/postgresql/v81c_data
       - pg-v81cindex-master:/var/lib/postgresql/v81c_index
       - pg-log-master:/var/log/postgresql
+    
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
@@ -42,7 +43,7 @@ services:
       - REPLICATION_SSLMODE=prefer
     volumes:
       - pg-data-slave:/var/lib/postgresql/9.6/main
-      - pg-temptbl-slave:/var/lib/postgresql/temptblspc
+    #  - pg-temptbl-slave:/var/lib/postgresql/temptblspc
       - pg-v81cdata-slave:/var/lib/postgresql/v81c_data
       - pg-v81cindex-slave:/var/lib/postgresql/v81c_index
       - pg-log-slave:/var/log/postgresql
@@ -91,6 +92,8 @@ services:
       - 10050:10050
     links:
       - PostgreSQL:master
+
+  #log-beats:
 
 volumes:
    pg-data-master:
