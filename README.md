@@ -411,7 +411,7 @@ vacuumdb -v -a -f -F -z
 * [на русском](https://postgrespro.ru/docs/postgrespro/current/app-vacuumdb)
 * [на английском](https://www.postgresql.org/docs/current/static/app-vacuumdb.html)
 
-# Базы данных и Тонкий тюннинг
+# Базы данных, Тонкий тюннинг и прочее
 
 ## Когда можно использовать данный образ в продуктиве
 
@@ -435,3 +435,12 @@ vacuumdb -v -a -f -F -z
 ## Скрипты PLSQL
 
 * `postgres.public.make_tablespace(name, dir, owner)` - создает табличное простраство с идентификатором `name`, по адресу `dir` с владелцем owner - по умолчанию `postgres`
+
+## Мониторинг
+
+в образ встроена возможность сбора журналов и статистики использования с помощью
+
+* `mamonsu` и https://github.com/zabbix/zabbix-docker
+* `pghero`
+* `powa`
+* `pgBadger`
