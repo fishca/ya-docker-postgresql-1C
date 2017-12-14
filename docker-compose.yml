@@ -6,6 +6,7 @@ services:
     ports:
       - "5432:5432"
     environment:
+      - USETMPFS-FOR-TMP=true
       - DEBUG=true
       - PG_PASSWORD=somepass
       - DB_USER=onecuser
@@ -32,6 +33,7 @@ services:
     links: 
       - PostgreSQL:master
     environment: 
+      - USETMPFS-FOR-TMP=true
       - REPLICATION_MODE=slave
       - REPLICATION_USER=repluser
       - REPLICATION_PASS=replpass
@@ -92,13 +94,13 @@ services:
 
 volumes:
    pg-data-master:
-   pg-temptbl-master:
+   #pg-temptbl-master: в тестовом режиме убираем TMPFS из монтирования
    pg-v81cdata-master:
    pg-v81cindex-master:
    pg-log-master:
 
    pg-data-slave:
-   pg-temptbl-slave:
+   #pg-temptbl-slave:
    pg-v81cdata-slave:
    pg-v81cindex-slave:
    pg-log-slave:

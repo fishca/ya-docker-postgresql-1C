@@ -536,6 +536,14 @@ enable_magic() {
   fi
 }
 
+create_ram_drive() {
+  if [[ ${USETMPFS-FOR-TMP} == true ]]; then
+    echo "Create RAM Drive for TMPFS"
+    
+    
+  fi
+}
+
 configure_postgresql() {
   initialize_database
   configure_recovery
