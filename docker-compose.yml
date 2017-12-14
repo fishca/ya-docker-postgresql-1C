@@ -3,10 +3,12 @@ services:
   PostgreSQL:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    tmpfs:
+      - /var/lib/postgresql/temptblspc
     ports:
       - "5432:5432"
     environment:
-      - USETMPFS-FOR-TMP=true
+      - USETMPFS_FOR_TMP=true
       - DEBUG=true
       - PG_PASSWORD=somepass
       - DB_USER=onecuser
@@ -31,6 +33,8 @@ services:
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    tmpfs:
+      - /var/lib/postgresql/temptblspc
     links: 
       - PostgreSQL:master
     environment: 

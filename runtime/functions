@@ -536,19 +536,6 @@ enable_magic() {
   fi
 }
 
-create_ram_drive() {
-  if [[ ${USETMPFS-FOR-TMP} == true ]]; then
-    echo "Create RAM Drive for TMPFS"
-    
-    mkdir -p ${PG_TEMPTBLSPC}
-    local freebefore=$(free -m|awk '/^Mem:/{print $2}')
-    local tmpfs=$(expr $freebefore / 4 )
-
-    mount -t tmpfs -o size=${tmpfs}M tmpfs ${PG_TEMPTBLSPC}
-    
-  fi
-}
-
 configure_postgresql() {
   initialize_database
   configure_recovery
@@ -562,7 +549,6 @@ configure_postgresql() {
   setup_default_extension
   create_plsql_function
 
-  create_ram_drive
 
   create_tablespaces
   
@@ -579,6 +565,7 @@ configure_postgresql() {
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
 
   #tune
+  physmem=$(free -m|awk '/^Mem:/{print $2}')
 
   case $REPLICATION_MODE in
       slave|snapshot|backup)
