@@ -352,6 +352,10 @@ docker run --name postgresql -itd --restart always \
 
 Сгрупированы в файле [переменных окружения](runtime/env-defaults)
 
+> **Примечание** 
+> каждая переменная имеет значение по умолчанию, например:
+> * `PG_TIMEZONE` - по умолчанию равно `Europe/Moscow`, то есть контейнер считает что он запускается в Московском времени
+
 # Maintenance
 
 ## Upgrading
@@ -407,7 +411,14 @@ vacuumdb -v -a -f -F -z
 * [на русском](https://postgrespro.ru/docs/postgrespro/current/app-vacuumdb)
 * [на английском](https://www.postgresql.org/docs/current/static/app-vacuumdb.html)
 
-# Тонкий тюннинг
+# Базы данных, Тонкий тюннинг и прочее
+
+## Когда можно использовать данный образ в продуктиве
+
+* Для GITLAB 
+* Для SonarQube
+* Для 1С информационных систем работающих в режиме совместимости не ниже 8.3.9
+  * образ использовался для баз данных размером `до 500 Gb` без использования сжатия на уровне файловых систем (только средствами TOAST)
 
 ## Ресурсы
 
@@ -420,3 +431,16 @@ vacuumdb -v -a -f -F -z
 Скрипт использует oscript.io для реализации, для подключения используется системные переменные DBNAME
 
 Подробней в самом скрипте [./tools/compsess-status.os]
+
+## Скрипты PLSQL
+
+* `postgres.public.make_tablespace(name, dir, owner)` - создает табличное простраство с идентификатором `name`, по адресу `dir` с владелцем owner - по умолчанию `postgres`
+
+## Мониторинг
+
+в образ встроена возможность сбора журналов и статистики использования с помощью
+
+* `mamonsu` и https://github.com/zabbix/zabbix-docker
+* `pghero`
+* `powa`
+* `pgBadger`

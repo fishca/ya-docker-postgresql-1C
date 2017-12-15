@@ -344,11 +344,11 @@ create_tablespaces() {
         ;;
       *)
 
-      echo "Create table spaces"
+      echo "Create table spaces if not exist"
 
-      psql -U ${PG_USER} -c "CREATE TABLESPACE tmptblspc LOCATION '${PG_TEMPTBLSPC}';" >/dev/null 2>&1
-      psql -U ${PG_USER} -c "CREATE TABLESPACE v81c_data LOCATION '${PG_V81C_DATA}';" >/dev/null 2>&1
-      psql -U ${PG_USER} -c "CREATE TABLESPACE v81c_index LOCATION '${PG_V81C_INDEX}';" >/dev/null 2>&1
+      psql -U ${PG_USER} -c "select public.make_tablespace('tmptblspc','${PG_TEMPTBLSPC}','');" 
+      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_data','${PG_V81C_DATA}','');" 
+      psql -U ${PG_USER} -c "select public.make_tablespace('v81c_index','${PG_V81C_INDEX}','');" 
 
       echo "SET temp_tablespaces"
 
@@ -435,8 +435,33 @@ create_replication_user() {
 }
 
 set_max_connection() {
+  # TODO - а зачем на реплике максимальное количество коннектов такое большое
   set_postgresql_param "max_connections" "${PG_MAX_CONNECTION}" 
   echo "Set the maxconnection ${PG_MAX_CONNECTION}"
+}
+
+create_plsql_function() {
+  case $REPLICATION_MODE in
+      slave|snapshot|backup)
+        echo "INFO! PLSQL cannot be created on a $REPLICATION_MODE node. Skipping..."
+        ;;
+      *)
+
+      echo "Create functions PLSQL"
+
+      psql -U ${PG_USER} -c "CREATE EXTENSION IF NOT EXISTS dblink;" >/dev/null 2>&1
+
+      echo "Make tablespace if not exist"
+      psql -U ${PG_USER} -f ${PG_APP_HOME}/plsql/make_tablespaces.pgsql
+      
+      ;;
+  esac
+}
+
+set_timezone() {
+  # а может ли реплика отличаться по временной зоне от мастера
+  set_postgresql_param "timezone" "${PG_TIMEZONE}" 
+  echo "Set timezone to ${PG_TIMEZONE}"
 }
 
 adoptive_shared_buffers() {
@@ -522,7 +547,11 @@ configure_postgresql() {
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
 
   setup_default_extension
+  create_plsql_function
+
+
   create_tablespaces
+  
 
   # stop server for reload conf
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
@@ -536,7 +565,6 @@ configure_postgresql() {
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
 
   #tune
-
   physmem=$(free -m|awk '/^Mem:/{print $2}')
 
   case $REPLICATION_MODE in
@@ -546,6 +574,8 @@ configure_postgresql() {
       *)
 
     set_max_connection
+    set_timezone
+
     adoptive_shared_buffers
     adoptive_temp_buffers
     adoptive_autovacuum_workers
