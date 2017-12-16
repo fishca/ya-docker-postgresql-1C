@@ -40,15 +40,18 @@ PostgreSQL это объектно ориентированая система �
 
 ## Обсуждения
 
-Before reporting your issue please try updating Docker to the latest version and check if it resolves the issue. Refer to the Docker [installation guide](https://docs.docker.com/installation) for instructions.
+Прежде чем принимать решения об обсуждении проблемы, попробуйте обновить `Docker` до последней версии и проверьте не исправило ли это вашу проблему. Ознакомьтесь c инструкцией [по установке и обновлению Docker](https://docs.docker.com/installation)
 
-SELinux users should try disabling SELinux using the command `setenforce 0` to see if it resolves the issue.
+Пользователи SELinux должны попробовать воспользоваться командой `setenforce 0` чтобы удостовериться в исправлении проблемы.
 
-If the above recommendations do not help then [report your issue](../../issues/new) along with the following information:
+Если вышеуказанные рекомендации не помогают, тогда произведите исследование, исправьте проблемы и сформируйте `pull request`
+при формировании `pull request'а` пожалуйста отразите  
 
-- Output of the `docker version` and `docker info` commands
-- The `docker run` command or `docker-compose.yml` used to start the image. Mask out the sensitive bits.
-- Please state if you are using [Boot2Docker](http://www.boot2docker.io), [VirtualBox](https://www.virtualbox.org), etc.
+- вывод команд `docker version` и `docker info`
+- проверяли ли вы работу в режиме `docker run` или использовали файл `docker-compose.yml`
+- использовали ли в момент проверки [Boot2Docker](http://www.boot2docker.io), [VirtualBox](https://www.virtualbox.org), и т.д.
+
+Дополнительно для данного проекта [открыт чат gitter](https://gitter.im/VanessaDockers/pgsteroids)
 
 # Приступая к работе
 
@@ -84,7 +87,7 @@ docker run --name postgresql -itd --restart always \
 docker exec -it postgresql sudo -u postgres psql
 ```
 
-*Дополнительно вы можете использовать примерный файл [docker-compose.yml](docker-compose.yml) для запуска вашего контейнера с помощью [Docker Compose](https://docs.docker.com/compose/)*
+*Дополнительно вы можете использовать примерный файл [docker-compose.yml](docker-compose.yml) для запуска вашего контейнера с помощью [Docker Compose](https://docs.docker.com/compose/). Обратите внимание: для вашего удобства созданы 2 файла `psql.bat` и `psql.sh` которые позволяют сразу же войти в режим `psql` с учетом того что вы склонировали репозиторий в каталог ya-docker-postgresql-1c*
 
 ## Сохранение данных контейнеров
 
@@ -107,9 +110,13 @@ mkdir -p /srv/docker/postgresql
 chcon -Rt svirt_sandbox_file_t /srv/docker/postgresql
 ```
 
+> **Примечение** 
+>
+> обратите внимание, в текущей версии контейнера каталог временных файлов по умолчанию создается в `tmpfs`, чтобы это изменить, вам необходимо явно переопределить точку монтирования
+
 ## Доверительные локальные соединения
 
-By default connections to the PostgreSQL server need to authenticated using a password. If desired you can trust connections from the local network using the `PG_TRUST_LOCALNET` variable.
+По умолчанию, соединения к PostgreSQL серверу требуют аутентификация при помощи пароля. Если вы решите использовать доверительные соединения без пароля из локальной сети, вы должны указать переменную окружения `PG_TRUST_LOCALNET`
 
 ```bash
 docker run --name postgresql -itd --restart always \
@@ -117,7 +124,7 @@ docker run --name postgresql -itd --restart always \
   silverbulleters/ya-docker-postgresql-1c:9.6.5-5
 ```
 
-> **Note**
+> **Примечение**
 >
 > The local network here is network to which the container is attached. This has different meanings depending on the `--net` parameter specified while starting the container. In the default configuration, this parameter would trust connections from other containers on the `docker0` bridge.
 
@@ -132,7 +139,7 @@ docker run --name postgresql -itd --restart always \
 ```
 
 
-> **Note**
+> **Примечание**
 >
 > - When [persistence](#persistence) is in use, `PG_PASSWORD` is effective on the first run.
 > - This feature is only available in the `latest` and versions > `9.4-10`
@@ -147,14 +154,14 @@ docker run --name postgresql -itd --restart always \
   silverbulleters/ya-docker-postgresql-1c:9.6.5-5
 ```
 
-> **Notes**
+> **Примечания**
 >
 > - The created user can login remotely
 > - The container will error out if a password is not specified for the user
 > - No changes will be made if the user already exists
 > - Only a single user can be created at each launch
 
-## Creating databases
+## Создание баз данных
 
 A new PostgreSQL database can be created by specifying the `DB_NAME` variable while starting the container.
 
@@ -347,7 +354,6 @@ docker run --name postgresql -itd --restart always \
   --env 'USERMAP_UID=999' --env 'USERMAP_GID=999' \
   silverbulleters/ya-docker-postgresql-1c:9.6.5-5
 ```
-
 # Параметры запуска контейнера
 
 Сгрупированы в файле [переменных окружения](runtime/env-defaults)
@@ -356,9 +362,9 @@ docker run --name postgresql -itd --restart always \
 > каждая переменная имеет значение по умолчанию, например:
 > * `PG_TIMEZONE` - по умолчанию равно `Europe/Moscow`, то есть контейнер считает что он запускается в Московском времени
 
-# Maintenance
+# Обслуживание
 
-## Upgrading
+## Обновление
 
 To upgrade to newer releases:
 
