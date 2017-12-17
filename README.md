@@ -319,17 +319,14 @@ Please refer to the documentation of [postgres](http://www.postgresql.org/docs/9
 
 ## Журналы работы СУБД
 
-By default the PostgreSQL server logs are sent to the standard output. Using the [Command-line arguments](#command-line-arguments) feature you can configure the PostgreSQL server to send the log output to a file using the `-c logging_collector=on` argument:
+В образе PostgreSQL настроен на хранение лог файлов внутри выделенного тома `pg-log-master` смонтированного в каталог `/var/log/postgresql`. Логи записываются каждый час в новый файл, в имени файла при этом присутствует указание часа в течении которого в этот файл производилась запись. При наступлении новых суток содержимое файлов перезатираются новыми данными. Таким образом "рядом" с работающим сервером мы имеем журналы за последние 24 часа работы, что обеспечивает защиту от переполнения тома с файлами журналов.
+
+Для анализа журналов работы они передаются в режиме онлайн на хост с где запущен коллектор лог файлов (см. раздел Коллектор журналов)
+
+Для просомтра содержимого журнала работы вызвать `tail -f` внутри контейнера. Примерно так:
 
 ```bash
-docker run --name postgresql -itd --restart always \
-  silverbulleters/ya-docker-postgresql-1c:9.6.5-5 -c logging_collector=on
-```
-
-To access the PostgreSQL logs you can use `docker exec`. For example:
-
-```bash
-docker exec -it postgresql tail -f /var/log/postgresql/postgresql-9.5-main.log
+docker exec -it postgresql tail -f /var/log/postgresql/postgresql-17.log
 ```
 
 
