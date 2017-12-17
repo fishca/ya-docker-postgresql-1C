@@ -317,7 +317,7 @@ docker run --name postgresql -itd --restart always \
 
 Please refer to the documentation of [postgres](http://www.postgresql.org/docs/9.6/static/app-postgres.html) for the complete list of available options.
 
-## Logs
+## Журналы работы СУБД
 
 By default the PostgreSQL server logs are sent to the standard output. Using the [Command-line arguments](#command-line-arguments) feature you can configure the PostgreSQL server to send the log output to a file using the `-c logging_collector=on` argument:
 
@@ -331,6 +331,20 @@ To access the PostgreSQL logs you can use `docker exec`. For example:
 ```bash
 docker exec -it postgresql tail -f /var/log/postgresql/postgresql-9.5-main.log
 ```
+
+
+## Коллектор журналов
+Для централизованного сбора и анализа журналов с помощью PgBadger сохраненные локальной на каждом сервере журналы работы СУБД отправляются в централизованное хранилище. Для этого с помощью сервиса `logstash` запускается контейнер и слушает порт 5000 для приема данных от службы `log-beats`. Входящие данные архивируются, сжимаются и складываются в файловую систему.
+
+Служба `log-beats` запускается рядом с запущенным контейнером СУБД подключаясь к тому с лог файлами СУБД обеспечивает их отправку в централизованное хранилище.
+
+
+Перед запуском необходимо в файле конфигурации filebeat/config/filebeat.yml указать ip адрес или днс имя хоста на котором запущен коллектор журналов.
+
+
+## PgBadger
+
+
 
 # UID/GID mapping
 
