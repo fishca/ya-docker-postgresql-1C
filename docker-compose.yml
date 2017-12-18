@@ -86,7 +86,17 @@ services:
     ports:
       - 10000:8080
     
-  
+  pgbadger:
+    container_name: pgbadger
+    build: 
+      context: pgbadger
+    image: silverbulleters/pgbadger:latest
+    ports:
+      - 9980:80
+    volumes:
+      - logstash-data:/var/log/pg-logs
+      # - ./:/srv
+
   mamonsu:
     container_name: mamonsu
     build: 
