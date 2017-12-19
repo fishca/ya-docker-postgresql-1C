@@ -92,6 +92,14 @@ services:
     build: 
       context: mamonsu
     image: silverbulleters/mamonsu:latest
+    environment:
+      - ZABBIX_URL=http://127.0.0.1:8081/
+      - ZABBIX_SERVER=127.0.0.1
+      - ZABBIX_USER=Admin
+      - ZABBIX_PASSWD=zabbix
+      - PG_SERVER=127.0.0.1
+      - PG_USER=postgres
+      - MAMONSU_DB=mamonsu
     ports:
       - 10050:10050
     links:
