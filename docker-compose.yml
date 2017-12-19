@@ -86,7 +86,17 @@ services:
     ports:
       - 10000:8080
     
-  
+  pgbadger:
+    container_name: pgbadger
+    build: 
+      context: pgbadger
+    image: silverbulleters/pgbadger:latest
+    ports:
+      - 9980:80
+    volumes:
+      - logstash-data:/var/log/pg-logs
+      # - ./:/srv
+
   mamonsu:
     container_name: mamonsu
     build: 
@@ -105,7 +115,28 @@ services:
     links:
       - PostgreSQL:master
 
-  #log-beats:
+  log-beats:
+    build:
+      context: filebeat/
+    image: silverbulleters/filebeat:6.1.0
+    volumes:
+      - pg-log-master:/var/log/postgresql:ro
+
+  logstash:
+    build:
+      context: logstash/
+    image: silverbulleters/logstash:6.1.0
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - logstash-data:/var/log/pg-logs/
+    ports:
+      - "5000:5000"
+      - "5044:5044"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+
 
 volumes:
    pg-data-master:
@@ -121,3 +152,6 @@ volumes:
    pg-log-slave:
 
    pgadmin-data:
+
+   logstash-data:
+   
