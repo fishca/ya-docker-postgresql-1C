@@ -3,8 +3,8 @@ services:
   PostgreSQL:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
-    tmpfs:
-      - /var/lib/postgresql/temptblspc
+    # tmpfs:
+    #   - /var/lib/postgresql/temptblspc
     ports:
       - "5432:5432"
     environment:
@@ -25,7 +25,7 @@ services:
       - PG_TIMEZONE=Europe/Moscow
     volumes:
       - pg-data-master:/var/lib/postgresql/9.6/main
-   #   - pg-temptbl-master:/var/lib/postgresql/temptblspc
+      - pg-temptbl-master:/var/lib/postgresql/temptblspc
       - pg-v81cdata-master:/var/lib/postgresql/v81c_data
       - pg-v81cindex-master:/var/lib/postgresql/v81c_index
       - pg-log-master:/var/log/postgresql
@@ -33,8 +33,8 @@ services:
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
-    tmpfs:
-      - /var/lib/postgresql/temptblspc
+    # tmpfs:
+    #   - /var/lib/postgresql/temptblspc
     links: 
       - PostgreSQL:master
     environment: 
@@ -47,7 +47,7 @@ services:
       - REPLICATION_SSLMODE=prefer
     volumes:
       - pg-data-slave:/var/lib/postgresql/9.6/main
-    #  - pg-temptbl-slave:/var/lib/postgresql/temptblspc
+      - pg-temptbl-slave:/var/lib/postgresql/temptblspc
       - pg-v81cdata-slave:/var/lib/postgresql/v81c_data
       - pg-v81cindex-slave:/var/lib/postgresql/v81c_index
       - pg-log-slave:/var/log/postgresql
@@ -140,13 +140,13 @@ services:
 
 volumes:
    pg-data-master:
-   #pg-temptbl-master: в тестовом режиме убираем TMPFS из монтирования
+   pg-temptbl-master:
    pg-v81cdata-master:
    pg-v81cindex-master:
    pg-log-master:
 
    pg-data-slave:
-   #pg-temptbl-slave:
+   pg-temptbl-slave:
    pg-v81cdata-slave:
    pg-v81cindex-slave:
    pg-log-slave:
