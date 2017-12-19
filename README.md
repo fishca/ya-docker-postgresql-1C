@@ -324,20 +324,55 @@ docker run --name postgresql -itd --restart always \
 
 Please refer to the documentation of [postgres](http://www.postgresql.org/docs/9.6/static/app-postgres.html) for the complete list of available options.
 
-## Logs
+## Журналы работы СУБД
 
-By default the PostgreSQL server logs are sent to the standard output. Using the [Command-line arguments](#command-line-arguments) feature you can configure the PostgreSQL server to send the log output to a file using the `-c logging_collector=on` argument:
+В образе PostgreSQL настроен на хранение лог файлов внутри выделенного тома `pg-log-master` смонтированного в каталог `/var/log/postgresql`. Логи записываются каждый час в новый файл, в имени файла при этом присутствует указание часа в течении которого в этот файл производилась запись. При наступлении новых суток содержимое файлов перезатираются новыми данными. Таким образом "рядом" с работающим сервером мы имеем журналы за последние 24 часа работы, что обеспечивает защиту от переполнения тома с файлами журналов.
 
-```bash
-docker run --name postgresql -itd --restart always \
-  silverbulleters/ya-docker-postgresql-1c:9.6.5-5 -c logging_collector=on
-```
+Для анализа журналов работы они передаются в режиме онлайн на хост с где запущен коллектор лог файлов (см. раздел Коллектор журналов)
 
-To access the PostgreSQL logs you can use `docker exec`. For example:
+Для просомтра содержимого журнала работы вызвать `tail -f` внутри контейнера. Примерно так:
 
 ```bash
-docker exec -it postgresql tail -f /var/log/postgresql/postgresql-9.5-main.log
+docker exec -it postgresql tail -f /var/log/postgresql/postgresql-17.log
 ```
+
+
+## Коллектор журналов
+Для централизованного сбора и анализа журналов с помощью PgBadger сохраненные локальной на каждом сервере журналы работы СУБД отправляются в централизованное хранилище. Для этого с помощью сервиса `logstash` запускается контейнер и слушает порт 5000 для приема данных от службы `log-beats`. Входящие данные архивируются, сжимаются и складываются в файловую систему.
+
+Служба `log-beats` запускается рядом с запущенным контейнером СУБД подключаясь к тому с лог файлами СУБД обеспечивает их отправку в централизованное хранилище.
+
+
+Перед запуском необходимо в файле конфигурации filebeat/config/filebeat.yml указать ip адрес или днс имя хоста на котором запущен коллектор журналов.
+
+
+## PgBadger
+
+Контейнер PgBadger собран с использованием сервиса `supervisord` который обеспечивает запуск нескольких служб внутри одного контейнера. Это веб сервер nginx для отображения отчетов сгенерированных из журналов работы и системный планировщик заданий `cron` который по расписанию запускает обработку журналов. По-умолчанию запуск задания анализа настроен на выполнение в пятую минуту каждого часа.
+
+После выполнения анализа проанализированный файл перемещается в поддиректорию (analyzed).
+
+Для просмотра статуса работы сервиса `supervisord` перейти в папку http://HOST-IP:9980/supervisor/
+
+Логин/пароль: admin/admin
+
+Для принудительного запуска анализа записываемого журнала после старта контейнера выполнить команду:
+```
+docker exec pgbadger ls -l /var/log/pg-logs
+```
+Скопировать имя файла который необходимо проанализировать и запустить анализ указав имя файла:
+
+```
+docker exec pgbadger pgbadger -I -J 4 --start-monday -Z +03 \
+  ВЫБРАННЫЙ-ФАЙЛ.tar.gz \
+  -O /var/www/html/
+```
+Для принудительного запуска скрипта анализа с переносом в архив выполнить:
+```
+docker exec pgbadger /bin/bash /usr/local/bin/start_analyze.sh
+```
+
+
 
 # UID/GID mapping
 
