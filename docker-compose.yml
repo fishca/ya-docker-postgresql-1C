@@ -3,9 +3,12 @@ services:
   PostgreSQL:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    # tmpfs:
+    #   - /var/lib/postgresql/temptblspc
     ports:
       - "5432:5432"
     environment:
+      - USETMPFS_FOR_TMP=true
       - DEBUG=true
       - PG_PASSWORD=somepass
       - DB_USER=onecuser
@@ -19,18 +22,23 @@ services:
       - REPLICATION_SSLMODE=
       - PG_TUNE_BY_MAMONSU=true
       - PG_MAX_CONNECTION=130
+      - PG_TIMEZONE=Europe/Moscow
     volumes:
       - pg-data-master:/var/lib/postgresql/9.6/main
       - pg-temptbl-master:/var/lib/postgresql/temptblspc
       - pg-v81cdata-master:/var/lib/postgresql/v81c_data
       - pg-v81cindex-master:/var/lib/postgresql/v81c_index
       - pg-log-master:/var/log/postgresql
+    
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    # tmpfs:
+    #   - /var/lib/postgresql/temptblspc
     links: 
       - PostgreSQL:master
     environment: 
+      - USETMPFS-FOR-TMP=true
       - REPLICATION_MODE=slave
       - REPLICATION_USER=repluser
       - REPLICATION_PASS=replpass
@@ -78,16 +86,57 @@ services:
     ports:
       - 10000:8080
     
-  
+  pgbadger:
+    container_name: pgbadger
+    build: 
+      context: pgbadger
+    image: silverbulleters/pgbadger:latest
+    ports:
+      - 9980:80
+    volumes:
+      - logstash-data:/var/log/pg-logs
+      # - ./:/srv
+
   mamonsu:
     container_name: mamonsu
     build: 
       context: mamonsu
     image: silverbulleters/mamonsu:latest
+    environment:
+      - ZABBIX_URL=http://127.0.0.1:8081/
+      - ZABBIX_SERVER=127.0.0.1
+      - ZABBIX_USER=Admin
+      - ZABBIX_PASSWD=zabbix
+      - PG_SERVER=127.0.0.1
+      - PG_USER=postgres
+      - MAMONSU_DB=mamonsu
     ports:
       - 10050:10050
     links:
       - PostgreSQL:master
+
+  log-beats:
+    build:
+      context: filebeat/
+    image: silverbulleters/filebeat:6.1.0
+    volumes:
+      - pg-log-master:/var/log/postgresql:ro
+
+  logstash:
+    build:
+      context: logstash/
+    image: silverbulleters/logstash:6.1.0
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - logstash-data:/var/log/pg-logs/
+    ports:
+      - "5000:5000"
+      - "5044:5044"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+
 
 volumes:
    pg-data-master:
@@ -103,3 +152,6 @@ volumes:
    pg-log-slave:
 
    pgadmin-data:
+
+   logstash-data:
+   

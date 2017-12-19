@@ -1,6 +1,12 @@
 #!/bin/bash
+mamonsu bootstrap \
+    --host ${PG_SERVER} \
+    --dbname=${MAMONSU_DB} \
+    --username=${PG_USER} -M ${PG_USER}
+
 mamonsu export template template.xml
+
 mamonsu zabbix template export template.xml \
-    --url=http://192.168.99.100:8081/ \
-    --user=Admin \
-    --password=zabbix
+    --url=${ZABBIX_URL} \
+    --user=${ZABBIX_USER} \
+    --password=${ZABBIX_PASSWD}
