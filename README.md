@@ -349,6 +349,24 @@ docker exec -it postgresql tail -f /var/log/postgresql/postgresql-17.log
 
 Логин/пароль: admin/admin
 
+Для принудительного запуска анализа записываемого журнала после старта контейнера выполнить команду:
+```
+docker exec pgbadger ls -l /var/log/pg-logs
+```
+Скопировать имя файла который необходимо проанализировать и запустить анализ указав имя файла:
+
+```
+docker exec pgbadger pgbadger -I -J 4 --start-monday -Z +03 \
+  ВЫБРАННЫЙ-ФАЙЛ.tar.gz \
+  -O /var/www/html/
+```
+Для принудительного запуска скрипта анализа с переносом в архив выполнить:
+```
+docker exec pgbadger /bin/bash /usr/local/bin/start_analyze.sh
+```
+
+
+
 # UID/GID mapping
 
 The files and processes created by the container are owned by the `postgres` user that is internal to the container. In the absense of user namespace in docker the UID and GID of the containers `postgres` user may have different meaning on the host.
