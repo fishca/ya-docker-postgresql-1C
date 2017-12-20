@@ -128,9 +128,9 @@ mkdir -p /srv/docker/postgresql
 chcon -Rt svirt_sandbox_file_t /srv/docker/postgresql
 ```
 
-> **Примечение** 
+> **Примечание** 
 >
-> обратите внимание, в текущей версии контейнера каталог временных файлов по умолчанию создается в `tmpfs`, чтобы это изменить, вам необходимо явно переопределить точку монтирования
+> обратите внимание, в текущей версии docker-compose данные PostgreSQL размещаются в именованных томах (docker volumes), чтобы это изменить, вам необходимо явно переопределить точки монтирования.
 
 ## Доверительные локальные соединения
 
@@ -142,7 +142,7 @@ docker run --name postgresql -itd --restart always \
   silverbulleters/ya-docker-postgresql-1c:9.6.5-5
 ```
 
-> **Примечение**
+> **Примечание**
 >
 > The local network here is network to which the container is attached. This has different meanings depending on the `--net` parameter specified while starting the container. In the default configuration, this parameter would trust connections from other containers on the `docker0` bridge.
 
