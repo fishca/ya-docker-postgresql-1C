@@ -331,6 +331,7 @@ setup_default_extension() {
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_prewarm;" >/dev/null 2>&1
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_buffercache;" >/dev/null 2>&1
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_repack;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS hypopg;" >/dev/null 2>&1
       ;;
   esac
 
@@ -376,7 +377,7 @@ load_extensions() {
     psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS ${extension};" >/dev/null 2>&1
   done
 
-  if [[ ${POWA_DATABASE} == ${database} ]]; then
+  if [[ ${database} == ${POWA_DATABASE} ]]; then
     echo "‣ Loading POWA extensions..."
     psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;" >/dev/null 2>&1
     psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS btree_gist;" >/dev/null 2>&1

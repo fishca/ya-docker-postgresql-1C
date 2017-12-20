@@ -16,6 +16,7 @@ services:
       - DB_USER=onecuser
       - DB_PASS=anotherpass
       - DB_NAME=powa,mamonsu
+      - POWA_DATABASE=powa
       - DB_TEMPLATE=
       - DB_EXTENSION=
       - REPLICATION_MODE=
