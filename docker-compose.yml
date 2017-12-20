@@ -80,7 +80,7 @@ services:
         - PostgreSQLSlave:slave
 
   pghero-db1:
-    image: ankane/pghero
+    image: ankane/pghero:v2.0.2
     environment:
       - DATABASE_URL=postgres://postgres:somepass@master-db:5432/frag-20
     links:
