@@ -59,11 +59,6 @@ ENV PGBDRVER=9.2
 
 ADD https://github.com/dalibo/pgbadger/archive/v$PGBDRVER.tar.gz /tmp/
 
-WORKDIR /tmp/
-
-RUN tar xzf v$PGBDRVER.tar.gz && \
-    rm /tmp/v$PGBDRVER.tar.gz
-
 WORKDIR /tmp/pgbadger-$PGBDRVER
 
 RUN perl Makefile.PL && make && make install
