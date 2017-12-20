@@ -55,11 +55,11 @@ RUN rm /var/www/html/index.nginx-debian.html
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add pgbadger
-ENV PGBDRVER=9.2
+ENV PGBGRVER=9.2
 
-ADD https://github.com/dalibo/pgbadger/archive/v$PGBDRVER.tar.gz /tmp/
+ADD https://github.com/dalibo/pgbadger/archive/v${PGBGRVER}.tar.gz /tmp/
 
-WORKDIR /tmp/pgbadger-$PGBDRVER
+WORKDIR /tmp/pgbadger-${PGBGRVER}
 
 RUN perl Makefile.PL && make && make install
 
