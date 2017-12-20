@@ -62,7 +62,7 @@ ADD https://github.com/dalibo/pgbadger/archive/v${PGBGRVER}.tar.gz /tmp/
 WORKDIR /tmp/
 
 RUN tar xzf v${PGBGRVER}.tar.gz && \
-    rm v$PGBGRVER.tar.gz
+    rm v${PGBGRVER}.tar.gz
 
 WORKDIR /tmp/pgbadger-${PGBGRVER}
 
