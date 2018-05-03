@@ -56,7 +56,7 @@ RUN apt-get update && apt-get install -y \
     && wget -O- $(wget -O- https://api.github.com/repos/powa-team/powa-archivist/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/powa-team/pg_qualstats/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/powa-team/pg_stat_kcache/releases/latest|jq -r '.tarball_url') | tar -xzf - \
-    && wget -O- $(wget -O- https://api.github.com/repos/powa-team/hypopg/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/hypopg/hypopg/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/rjuju/pg_track_settings/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/reorg/pg_repack/tags|jq -r '.[0].tarball_url') | tar -xzf - \
     && for f in $(ls); do cd $f; make install; cd ..; rm    -rf $f; done \
